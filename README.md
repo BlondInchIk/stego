@@ -25,5 +25,5 @@ And run:
 ```bash
   run ./build/exe.win-amd64-3.10/main.exe
 ```
-![Logo]('icon.ico')
+![alt-текст](https://raw.githubusercontent.com/BlondInchIk/stego/master/icon.ico "stego")
 
