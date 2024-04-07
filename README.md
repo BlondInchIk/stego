@@ -54,5 +54,6 @@ If you want to remove the program, then run the installer again
 ![image](https://github.com/BlondInchIk/stego/assets/90390586/b0f93ed5-c632-4fd7-a203-02a30d682dac)
 
 
-![image](https://raw.githubusercontent.com/BlondInchIk/stego/master/stego.png "stego")
+![show](https://github.com/BlondInchIk/stego/assets/90390586/82494605-fa98-40f2-a43b-4e7f5c8e99f1)
+
 
