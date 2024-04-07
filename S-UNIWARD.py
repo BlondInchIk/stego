@@ -1,4 +1,3 @@
-import os
 import sys
 import imageio
 import scipy.fftpack
@@ -9,18 +8,11 @@ import random
 from PIL import Image, ImageChops
 
 def generate_difference_image(image1_path, image2_path, output_path):
-    # Загрузка изображений
     image1 = Image.open(image1_path)
     image2 = Image.open(image2_path)
-
-    # Создание маски различий
     diff = ImageChops.difference(image1, image2)
     mask = diff.convert('L').point(lambda x: 255 if x != 0 else 0, '1')
-
-    # Наложение маски на оригинальное изображение
     masked_image = Image.composite(image1, Image.new('RGB', image1.size, 'black'), mask)
-
-    # Сохранение результата
     masked_image.save(output_path)
     print("Создано изображение с видимыми изменениями:", output_path)
 
@@ -103,9 +95,6 @@ def embed(x, rho_p1, rho_m1, m, custom_data, seed):
     return y
 
 def find(x, seed):
-    # lamb = calc_lambda(rho_p1, rho_m1, m, n)
-    # pChangeP1 = (np.exp(-lamb * rho_p1)) / (1 + np.exp(-lamb * rho_p1) + np.exp(-lamb * rho_m1))
-    # pChangeM1 = (np.exp(-lamb * rho_m1)) / (1 + np.exp(-lamb * rho_p1) + np.exp(-lamb * rho_m1))
     y = x.copy()
     y = y.reshape(-1)
     result = ""
@@ -185,7 +174,6 @@ def show(cover_path, key):
     stego = cover.copy()
     seed = generate_random_sequence(key, cover[:,:,1].shape[0] * cover[:,:,1].shape[1])
     stego[:,:,1] = find(cover[:,:,1],seed)
-    # imageio.imwrite(stego_path, stego)
 
 def read_data(file_path):
        with open(file_path, 'r') as file:
@@ -197,8 +185,7 @@ if __name__ == "__main__":
         data_path = sys.argv[4]
         data = read_data(data_path)
         hide(sys.argv[1], sys.argv[3], data, 10)
-        output_path = 'difference_image.jpg'  # Путь для сохранения результирующего изображения
-
+        output_path = 'difference_image.jpg'
         generate_difference_image(sys.argv[1], sys.argv[3], output_path)
 
     elif sys.argv[2] == '1':
