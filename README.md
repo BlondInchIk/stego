@@ -4,6 +4,8 @@ A windows application for performing steganography.
 
 Using algorithm:
 1. S-UNIWARD
+2. FFT
+3. PVD
 
 ## Instructions
 
@@ -11,11 +13,12 @@ This program work with .bmp files to put text into them, and with .txt files to 
 
 To perform steganography you must select the input bmp file, the name of the output bmp file and the input txt file (the text from which will be embedded). Once you have selected the files, the logo will change to the image you selected (for preview). To start the program you need to press the green button - RUN. After launching, the program will freeze waiting for the execution result, and a console will open in the background where you can monitor the execution progress. After embedding, the console will close, and the execution time (~20 sec) will be written in the logs.
 
-If you want to make de-steganography, then you just have to press the black button - RUN REVERSE. For convenience, the name of the input file is taken from the text field (the name of the output file when embedding).
+If you want to make de-steganography, then you just have to press the black button - RUN REVERSE. For convenience, the name of the input file is taken from the text field (the name of the output file when embedding). The output txt file with information - 'output.txt'.
 
 
 ![image](https://github.com/BlondInchIk/stego/assets/90390586/ab9322dc-2a51-4434-a317-f00f937f423f)
 
+### How install?
 
 ### Option 1
 
