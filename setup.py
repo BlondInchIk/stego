@@ -2,7 +2,7 @@
 
 from cx_Freeze import setup, Executable
 
-include_files = ['S-UNIWARD.py', 'icon.ico', 'stego.png']
+include_files = ['S-UNIWARD.py', 'FFT.py', 'PVD.py', 'icon.ico', 'stego.png']
 
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/aa371847(v=vs.85).aspx

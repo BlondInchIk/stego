@@ -22,7 +22,8 @@ class SteganographyApp(QMainWindow):
         self.algorithm_combo = QComboBox(self)
         self.algorithm_combo.move(175, 25)
         self.algorithm_combo.addItem("S-UNIWARD")
-        # self.algorithm_combo.addItem("Algorithm 2")
+        self.algorithm_combo.addItem("PVD")
+        self.algorithm_combo.addItem("FFT")
 
         self.input_file_button = QPushButton("Select Input File", self)
         self.input_file_button.move(25, 75)
@@ -59,7 +60,6 @@ class SteganographyApp(QMainWindow):
 
         self.run_analysis = QPushButton("Run analysis", self)
         self.run_analysis.move(25, 275)
-        # self.run_analysis.setStyleSheet("background-color: 0f0f0f;")
         self.run_analysis.clicked.connect(self.generate_difference_image)
         
         self.log_text_edit = QTextEdit(self)
@@ -109,7 +109,7 @@ class SteganographyApp(QMainWindow):
         data_file = self.data_file_label.text()
         algorithm_file = algorithm + ".py"
         
-        if algorithm not in ["S-UNIWARD"]:
+        if algorithm not in ["S-UNIWARD", "PVD", "FFT"]:
             QMessageBox.warning(self, "Error", "Invalid algorithm selected.")
             return
         
@@ -132,7 +132,7 @@ class SteganographyApp(QMainWindow):
         
         algorithm_file = algorithm + ".py"
         
-        if algorithm not in ["S-UNIWARD"]:
+        if algorithm not in ["S-UNIWARD", "PVD", "FFT"]:
             QMessageBox.warning(self, "Error", "Invalid algorithm selected.")
             return
         
