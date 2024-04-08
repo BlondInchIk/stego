@@ -29,7 +29,7 @@ def steganography(image_path, mode, output_image=None, text_file=None):
 
         for i in range(len(fft_shifted)):
             for j in range(len(fft_shifted[i])):
-                text_binary += str(int(fft_shifted[i][j].real) % 2)
+                text_binary += str(int(abs(fft_shifted[i][j][0])) % 2)
 
         return text_binary
 
@@ -61,7 +61,7 @@ def steganography(image_path, mode, output_image=None, text_file=None):
             if decoded_text.endswith(' '):
                 break
 
-        with open('output.txt', 'w') as file:
+        with open('output.txt', 'w', encoding='utf8') as file:
             file.write(decoded_text)
 
 if __name__ == "__main__":

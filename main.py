@@ -89,10 +89,12 @@ class SteganographyApp(QMainWindow):
             self.label_picture.show()
             self.input_file_button.setStyleSheet("background-color: green;")
         
-            self.size_label = QLabel("Max data size: " + str(size(self.pixmap.width()*self.pixmap.height()//320)), self)
+            self.size_label = QLabel("Max data size: " + str(size(self.pixmap.width()*self.pixmap.height()//8)), self)
             self.size_label.setGeometry(25, 310, 200, 30)
             self.size_label.setWordWrap(True)
             self.size_label.show()
+
+            self.show_weight()
 
         
 
@@ -175,6 +177,21 @@ class SteganographyApp(QMainWindow):
         self.masked_image = Image.composite(Image.new('RGB', self.image1.size, 'red'), self.image1, self.mask)
         self.masked_image.save('difference_image.jpg')
         self.log_text_edit.append("Analysis success! Make: difference_image.jpg")
+
+    def show_weight(self):
+
+        weight = 1
+        if self.algorithm_combo.currentText() == "S-UNIWARD":
+            weight = 1/40
+        elif self.algorithm_combo.currentText() == "PVD":
+            weight = 3
+        elif self.algorithm_combo.currentText() == "FFT":
+            weight = 1                       
+
+        self.size_label = QLabel("Max data size: " + str(size(self.pixmap.width()*self.pixmap.height()//8*weight)), self)
+        self.size_label.setGeometry(25, 310, 200, 30)
+        self.size_label.setWordWrap(True)
+        self.size_label.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
