@@ -57,6 +57,11 @@ If you want to remove the program, then run the installer again
 ![image](https://github.com/BlondInchIk/stego/assets/90390586/b0f93ed5-c632-4fd7-a203-02a30d682dac)
 
 
-![show](https://github.com/BlondInchIk/stego/assets/90390586/82494605-fa98-40f2-a43b-4e7f5c8e99f1)
+![image](https://github.com/BlondInchIk/stego/assets/90390586/3abe26f5-b6eb-496c-bc12-28ff97ac26b0)
 
+
+![image](https://github.com/BlondInchIk/stego/assets/90390586/096084ff-5591-4e3a-8599-0b90ab8eac3a)
+
+
+![image](https://github.com/BlondInchIk/stego/assets/90390586/79d0d7c9-a636-430f-9675-bf1a33fc6089)
 
