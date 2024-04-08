@@ -5,16 +5,6 @@ import scipy.signal
 import scipy.ndimage
 import numpy as np
 import random
-from PIL import Image, ImageChops
-
-def generate_difference_image(image1_path, image2_path, output_path):
-    image1 = Image.open(image1_path)
-    image2 = Image.open(image2_path)
-    diff = ImageChops.difference(image1, image2)
-    mask = diff.convert('L').point(lambda x: 255 if x != 0 else 0, '1')
-    masked_image = Image.composite(image1, Image.new('RGB', image1.size, 'black'), mask)
-    masked_image.save(output_path)
-    print("Создано изображение с видимыми изменениями:", output_path)
 
 def generate_random_sequence(seed, length):
     random.seed(seed)
@@ -164,7 +154,7 @@ def hide(cover_path, stego_path, data, key):
     seed = generate_random_sequence(key, cover[:,:,1].shape[0] * cover[:,:,1].shape[1])
     for channel in range(3):
         rho_p1, rho_m1 = cost_fn(cover[:,:,channel])
-        sz = len(data) * 8
+        sz = len(data) * 8 * 40
         stego[:,:,channel] = embed(cover[:,:,channel], rho_p1, rho_m1, sz, data, seed)
         print("channel:", channel, "modifs:", np.sum(np.abs(stego[:,:,channel].astype("int16")-cover[:,:,channel].astype("int16"))))
     imageio.imwrite(stego_path, stego)
@@ -185,8 +175,5 @@ if __name__ == "__main__":
         data_path = sys.argv[4]
         data = read_data(data_path)
         hide(sys.argv[1], sys.argv[3], data, 10)
-        output_path = 'difference_image.jpg'
-        generate_difference_image(sys.argv[1], sys.argv[3], output_path)
-
     elif sys.argv[2] == '1':
         show(sys.argv[1], 10)

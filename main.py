@@ -6,6 +6,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import qdarkstyle
 from PyQt5.QtGui import QIcon
+from PIL import Image, ImageChops
+from hurry.filesize import size
 
 class SteganographyApp(QMainWindow):
     def __init__(self):
@@ -55,8 +57,13 @@ class SteganographyApp(QMainWindow):
         self.reverse_steganography_button.clicked.connect(self.run_reverse_steganography)
         self.reverse_steganography_button.setStyleSheet("background-color: black;")
 
+        self.run_analysis = QPushButton("Run analysis", self)
+        self.run_analysis.move(25, 275)
+        # self.run_analysis.setStyleSheet("background-color: 0f0f0f;")
+        self.run_analysis.clicked.connect(self.generate_difference_image)
+        
         self.log_text_edit = QTextEdit(self)
-        self.log_text_edit.setGeometry(25, 275, 350, 150)
+        self.log_text_edit.setGeometry(25, 350, 350, 75)
         self.log_text_edit.setReadOnly(True)
         self.log_text_edit.setPlaceholderText("LOG WINDOW\n")
 
@@ -72,6 +79,7 @@ class SteganographyApp(QMainWindow):
         if file_name:
 
             self.input_file_label.setText(file_name)
+
             self.label.hide()
             self.label_picture = QLabel(self)
             self.pixmap = QPixmap(file_name)
@@ -80,6 +88,12 @@ class SteganographyApp(QMainWindow):
             self.label_picture.setPixmap(self.scaled_pixmap)
             self.label_picture.show()
             self.input_file_button.setStyleSheet("background-color: green;")
+        
+            self.size_label = QLabel("Max data size: " + str(size(self.pixmap.width()*self.pixmap.height()//320)), self)
+            self.size_label.setGeometry(25, 310, 200, 30)
+            self.size_label.setWordWrap(True)
+            self.size_label.show()
+
         
 
     def select_data_file(self):
@@ -107,11 +121,10 @@ class SteganographyApp(QMainWindow):
             QMessageBox.warning(self, "Error", "Data file must be in TXT format.")
             return
         
-        self.steganography_button.setStyleSheet("background-color: gray;")
         self.log_text_edit.append("Running Steganography...")
-
         command = "python {} {} 0 {} {}".format(algorithm_file, input_file, output_file, data_file)
         self.run_algorithm(command, "Steganography")
+   
         
     def run_reverse_steganography(self):
         algorithm = self.algorithm_combo.currentText()
@@ -130,6 +143,7 @@ class SteganographyApp(QMainWindow):
         command = "python {} {} 1".format(algorithm_file, input_file)
         self.log_text_edit.append("Running Reverse Steganography...")
         self.run_algorithm(command, "Reverse Steganography")
+        self.log_text_edit.append("Make: output.txt")
 
     def run_algorithm(self, command, operation):
         start_time = time.time()
@@ -142,6 +156,25 @@ class SteganographyApp(QMainWindow):
                 self.log_text_edit.append("{} failed.".format(operation))
         except:
             self.log_text_edit.append("Error running {}.".format(operation))
+
+
+    def generate_difference_image(self):
+
+        if not self.input_file_label.text().endswith(".bmp"):
+            QMessageBox.warning(self, "Error", "Input file must be in BMP format.")
+            return
+        
+        if not self.output_file_edit.text().endswith(".bmp"):
+            QMessageBox.warning(self, "Error", "Input file must be in BMP format.")
+            return
+
+        self.image1 = Image.open(self.input_file_label.text())
+        self.image2 = Image.open(self.output_file_edit.text())
+        self.diff = ImageChops.difference(self.image1, self.image2)
+        self.mask = self.diff.convert('L').point(lambda x: 255 if x != 0 else 0, '1')
+        self.masked_image = Image.composite(Image.new('RGB', self.image1.size, 'red'), self.image1, self.mask)
+        self.masked_image.save('difference_image.jpg')
+        self.log_text_edit.append("Analysis success! Make: difference_image.jpg")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
