@@ -1,97 +1,68 @@
-from PIL import Image
 import numpy as np
-import numpy.fft as fft
-import sys
+from PIL import Image
 
+def text_to_binary(text):
+    """Convert text to binary string"""
+    binary = ''.join(format(ord(char), '08b') for char in text)
+    return binary
 
-def steganography(image_path, mode, output_image=None, text_file=None):
-    def fft_encode(pixels, text_binary):
+def embed_text(image_path, text_file_path, output_image_path):
+    """Embed text into image using FFT"""
+    # Load image
+    image = np.array(Image.open(image_path))
+    # Convert text to binary
+    with open(text_file_path, 'r') as file:
+        text = file.read()
+    binary_text = text_to_binary(text)
+    # Check if text can fit in the image
+    if len(binary_text) > image.size:
+        print("Text is too long to embed in the image.")
+        return
+    # Perform FFT
+    fft_image = np.fft.fft2(image)
+    # Embed text in the FFT image
+    for i, bit in enumerate(binary_text):
+        x = i // image.shape[1]
+        y = i % image.shape[1]
+        if bit == '1':
+            fft_image[x, y] = fft_image[x, y] + 100  # Add a small value to change the FFT result
+        else:
+            fft_image[x, y] = fft_image[x, y] - 100  # Subtract a small value to change the FFT result
+    # Perform inverse FFT
+    embedded_image = np.fft.ifft2(fft_image).real
+    # Normalize the values
+    embedded_image = np.uint8(embedded_image)
+    # Save the resulting image
+    result_image = Image.fromarray(embedded_image)
+    result_image.save(output_image_path)
+    print("Text embedded successfully!")
 
-        fft_pixels = fft.fft2(pixels)
-        fft_shifted = fft.fftshift(fft_pixels)
-        text_idx = 0
+# Пример использования
+embed_text("stego.png", "C:/Users/vladi/OneDrive/Документы/text.txt", "C:/Usersvladi\OneDrive\Документы\output_image_embedded.bmp")
 
-        for i in range(len(fft_shifted)):
-            for j in range(len(fft_shifted[i])):
-                if text_idx < len(text_binary):
-                    fft_shifted[i][j] = fft_shifted[i][j] + int(text_binary[text_idx])
-                    text_idx += 1
+def extract_text(image_path, output_text_file):
+    """Extract text from image using FFT"""
+    # Load image
+    image = np.array(Image.open(image_path))
+    # Perform FFT
+    fft_image = np.fft.fft2(image)
+    # Initialize empty binary string
+    binary_text = ''
+    # Extract text from the FFT image
+    for i in range(image.size):
+        x = i // image.shape[1]
+        y = i % image.shape[1]
+        # If FFT coefficient is greater than the original image, assume it's a '1'
+        if fft_image[x, y] > image[x, y]:
+            binary_text += '1'
+        else:
+            binary_text += '0'
+    # Convert binary text to ASCII text
+    text = ''.join(chr(int(binary_text[i:i+8], 2)) for i in range(0, len(binary_text), 8))
+    # Save the extracted text to a file
+    with open(output_text_file, 'w') as file:
+        file.write(text)
+    print("Text extracted successfully!")
 
-        fft_shifted = fft.ifftshift(fft_shifted)
-        encoded_pixels = fft.ifft2(fft_shifted).real.astype(np.uint8)
-        return encoded_pixels
-
-    def fft_decode(encoded_pixels):
-
-        fft_pixels = fft.fft2(encoded_pixels)
-        fft_shifted = fft.fftshift(fft_pixels)
-        text_binary = ''
-        text_length = 0
-
-        for i in range(len(fft_shifted)):
-            for j in range(len(fft_shifted[i])):
-                text_binary += str(int(abs(fft_shifted[i][j][0])) % 2)
-                text_length += 1
-                if text_length % 8 == 0 and text_binary[-8:] == '00000000':
-                    break
-            else:
-                continue
-            break
-
-        text_binary = text_binary[:-(text_length % 8)]  # Remove padding bits
-
-        return text_binary
-
-    if mode == 0:
-        if output_image is None or text_file is None:
-            print("Error: Output image path and text file path are required in encode mode (mode 0).")
-            return
-
-        image = Image.open(image_path)
-        with open(text_file, 'r') as file:
-            text = file.read()
-
-        width, height = image.size
-        text += ' ' * (width * height - len(text))
-        text_binary = ''.join(format(ord(char), '08b') for char in text)
-
-        pixels = np.array(image)
-        encoded_pixels = fft_encode(pixels, text_binary)
-        stego_image = Image.fromarray(encoded_pixels)
-        stego_image.save(output_image)
-
-    elif mode == 1:
-        if text_file is None:
-            print("Error: Output text file path is required in decode mode (mode 1).")
-            return
-
-        encoded_image = Image.open(image_path)
-        encoded_pixels = np.array(encoded_image)
-        decoded_text_binary = fft_decode(encoded_pixels)
-        decoded_text = ''
-
-        for i in range(0, len(decoded_text_binary), 8):
-            byte = decoded_text_binary[i:i + 8]
-            decoded_text += chr(int(byte, 2))
-            if decoded_text.endswith(' '):
-                break
-
-        with open(text_file, 'w', encoding='utf8') as file:
-            file.write(decoded_text)
-
-
-if len(sys.argv) < 2:
-    print("Usage: python script.py <image_path> <mode> <output_image> <text_file>")
-
-image_path = input("Enter image path: ")
-mode = int(input("Enter mode (0 for encode, 1 for decode): "))
-
-if mode == 0:
-    output_image = input("Enter output image path: ")
-    text_file = input("Enter text file path: ")
-    steganography(image_path, mode, output_image, text_file)
-elif mode == 1:
-    text_file = input("Enter output text file path: ")
-    steganography(image_path, mode, text_file=text_file)
-else:
-    print("Invalid mode. Please enter 0 for encode or 1 for decode.")
+# Пример использования
+extract_text("C:\Users\vladi\OneDrive\Документы\output_image_embedded.bmp", "C:\Users\vladi\OneDrive\Документы/extracted_text.txt")
