@@ -5,10 +5,6 @@ import sys
 
 def steganography(image_path, mode, output_image=None, text_file=None):
 
-    image = Image.open(image_path)
-    with open(text_file, 'r') as file:
-        text = file.read()
-    text_origin = text
     def fft_encode(pixels, text_binary):
 
         fft_pixels = fft.fft2(pixels)
@@ -39,6 +35,11 @@ def steganography(image_path, mode, output_image=None, text_file=None):
 
     if mode == 0:
 
+        image = Image.open(image_path)
+        with open(text_file, 'r') as file:
+            text = file.read()
+        text_origin = text
+        
         width, height = image.size
         text_origin += ' ' * (width * height - len(text_origin))
         text_binary = ''.join(format(ord(char), '08b') for char in text_origin)
@@ -62,7 +63,7 @@ def steganography(image_path, mode, output_image=None, text_file=None):
                 break
 
         with open('output.txt', 'w', encoding='utf8') as file:
-            file.write(text)
+            file.write(decoded_text)
 
 if __name__ == "__main__":
 
@@ -70,4 +71,4 @@ if __name__ == "__main__":
         steganography(sys.argv[1], 0, sys.argv[3], sys.argv[4])
 
     elif sys.argv[2] == '1':
-        steganography(sys.argv[3], 1, text_file='output.txt')
+        steganography(sys.argv[1], 1, text_file='output.txt')
