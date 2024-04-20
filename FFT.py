@@ -8,7 +8,7 @@ def steganography(image_path, mode, output_image=None, text_file=None):
     image = Image.open(image_path)
     with open(text_file, 'r') as file:
         text = file.read()
-
+    text_origin = text
     def fft_encode(pixels, text_binary):
 
         fft_pixels = fft.fft2(pixels)
@@ -40,8 +40,8 @@ def steganography(image_path, mode, output_image=None, text_file=None):
     if mode == 0:
 
         width, height = image.size
-        text += ' ' * (width * height - len(text))
-        text_binary = ''.join(format(ord(char), '08b') for char in text)
+        text_origin += ' ' * (width * height - len(text_origin))
+        text_binary = ''.join(format(ord(char), '08b') for char in text_origin)
 
         pixels = np.array(image)
         encoded_pixels = fft_encode(pixels, text_binary)
